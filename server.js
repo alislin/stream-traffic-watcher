@@ -3,9 +3,11 @@ import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';
 import cron from 'node-cron';
+import { WebSocketServer } from 'ws';
 
 const hostname = '127.0.0.1';
 const port = 23110;
+const wsPort = 23111; // WebSocket 端口
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,9 +31,32 @@ function runAppJS() {
   appProcess.on('error', (err) => {
     console.error('启动 app.js 失败:', err);
   });
+
+  appProcess.on('close', (code) => {
+    if (code !== 0) {
+      console.error(`app.js 执行失败，退出代码 ${code}`);
+    } else {
+      console.log('app.js 执行完成，通知客户端刷新页面。');
+      broadcast('reload'); // 发送刷新消息
+    }
+  });
 }
 
 runAppJS();
+
+// 创建 WebSocket 服务器
+const wss = new WebSocketServer({ port: wsPort });
+
+wss.on('connection', ws => {
+  console.log('Client connected');
+  ws.on('close', () => console.log('Client disconnected'));
+});
+
+function broadcast(message) {
+  wss.clients.forEach(client => {
+    client.send(message);
+  });
+}
 
 const server = http.createServer((req, res) => {
   let filePath = path.join(directoryToServe, req.url === '/' ? 'index.html' : req.url);
@@ -74,7 +99,7 @@ function getContentType(filePath) {
   }
 }
 
-// 每半小时执行一次 app.js
+// 每 1 分钟执行一次 app.js (测试用)
 cron.schedule('*/30 * * * *', () => {
   console.log('Running app.js...');
   const appProcess = spawn('node', ['app.js', 'url.txt'], {
@@ -86,7 +111,8 @@ cron.schedule('*/30 * * * *', () => {
     if (code !== 0) {
       console.error(`app.js 执行失败，退出代码 ${code}`);
     } else {
-      console.log('app.js 执行完成。');
+      console.log('app.js 执行完成，通知客户端刷新页面。');
+      broadcast('reload'); // 发送刷新消息
     }
   });
 
@@ -96,5 +122,6 @@ cron.schedule('*/30 * * * *', () => {
 });
 
 server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+  console.log(`HTTP Server running at http://${hostname}:${port}/`);
+  console.log(`WebSocket Server running at ws://${hostname}:${wsPort}`);
 });

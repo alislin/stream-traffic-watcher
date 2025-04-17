@@ -211,6 +211,24 @@
             }
         });
 
+        // WebSocket 客户端
+        const ws = new WebSocket('ws://localhost:23111');
+
+        ws.onopen = () => {
+            console.log('WebSocket connected');
+        };
+
+        ws.onmessage = (event) => {
+            if (event.data === 'reload') {
+                console.log('收到刷新消息，正在刷新页面...');
+                window.location.reload();
+            }
+        };
+
+        ws.onclose = () => {
+            console.log('WebSocket disconnected');
+        };
+
     </script>
 </body>
 </html>
