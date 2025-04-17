@@ -7,7 +7,7 @@ import { WebSocketServer } from 'ws';
 
 const hostname = '127.0.0.1';
 const port = 23110;
-const wsPort = 23111; // WebSocket 端口
+const wsPort = port + 1; // WebSocket 端口
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
