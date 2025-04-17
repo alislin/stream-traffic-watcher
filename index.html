@@ -216,7 +216,8 @@
         });
 
         // WebSocket 客户端
-        const ws = new WebSocket('ws://localhost:23111');
+        const wsPort = window.location.port ? parseInt(window.location.port) + 1 : 23111;
+        const ws = new WebSocket(`ws://localhost:${wsPort}`);
 
         ws.onopen = () => {
             console.log('WebSocket connected');
