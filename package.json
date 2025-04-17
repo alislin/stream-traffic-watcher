@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "run": "node app.js url.txt"
+    "run": "node app.js url.txt",
+    "server": "node server.js"
   },
   "keywords": [],
   "author": "",

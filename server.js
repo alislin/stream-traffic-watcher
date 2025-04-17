@@ -11,6 +11,28 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const directoryToServe = __dirname; // 服务当前目录
 
+function runAppJS() {
+  console.log('Running app.js at startup...');
+  const appProcess = spawn('node', ['app.js', 'url.txt'], {
+    cwd: directoryToServe,
+    stdio: 'inherit' // 将子进程的输出导入到当前进程
+  });
+
+  appProcess.on('close', (code) => {
+    if (code !== 0) {
+      console.error(`app.js 执行失败，退出代码 ${code}`);
+    } else {
+      console.log('app.js 执行完成。');
+    }
+  });
+
+  appProcess.on('error', (err) => {
+    console.error('启动 app.js 失败:', err);
+  });
+}
+
+runAppJS();
+
 const server = http.createServer((req, res) => {
   let filePath = path.join(directoryToServe, req.url === '/' ? 'index.html' : req.url);
   fs.readFile(filePath, (err, content) => {
