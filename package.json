@@ -2,7 +2,7 @@
   "name": "stream-traffic-watcher",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "electron-starter.js",
   "type": "module",
   "scripts": {
     "run": "node app.js url.txt",
