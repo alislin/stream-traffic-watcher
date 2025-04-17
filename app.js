@@ -49,6 +49,9 @@ function getDailyDataFilename() {
 async function fetchData() {
   try {
     const response = await fetch(API_URL);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const data = await response.json();
     return data;
   } catch (error) {
@@ -73,10 +76,11 @@ function calculateDailyUsage(currentData) {
   }
 
   const today = new Date().toISOString().split('T')[0];
-  // 初始化昨天的记录 (如果不存在)
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+  // 初始化昨天的记录 (如果不存在)
   if (!monthlyData[yesterdayStr]) {
     monthlyData[yesterdayStr] = {
       bw_counter_b: currentData.bw_counter_b,
@@ -86,12 +90,12 @@ function calculateDailyUsage(currentData) {
     };
   }
 
-  let lastCounter = 0;
-  if (monthlyData[today]) {
-    lastCounter = monthlyData[today].last_bw_counter_b || 0;
+  let yesterdayLastCounter = 0;
+  if (monthlyData[yesterdayStr]) {
+    yesterdayLastCounter = monthlyData[yesterdayStr].last_bw_counter_b || 0;
   }
   const currentCounter = currentData.bw_counter_b;
-  const dailyUsage = currentCounter - lastCounter;
+  const dailyUsage = currentCounter - yesterdayLastCounter;
 
   monthlyData[today] = {
     bw_counter_b: currentCounter,
@@ -166,7 +170,9 @@ async function main() {
   if (data) {
     storeData(data);
     calculateDailyUsage(data);
-    displayData(data); 
+    displayData(data);
+  } else {
+    console.error('数据获取失败，程序终止。');
   }
 }
 
