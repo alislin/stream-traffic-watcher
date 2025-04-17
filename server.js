@@ -122,6 +122,23 @@ cron.schedule('*/30 * * * *', () => {
 });
 
 server.listen(port, hostname, () => {
-  console.log(`HTTP Server running at http://${hostname}:${port}/`);
+  const serviceUrl = `http://${hostname}:${port}/`;
+  console.log(`HTTP Server running at ${serviceUrl}`);
   console.log(`WebSocket Server running at ws://${hostname}:${wsPort}`);
 });
+
+import { shell, app, BrowserWindow } from 'electron';
+
+// 在 Electron 应用准备就绪后打开外部链接
+app.whenReady().then(() => {
+  let win = new BrowserWindow({
+    width: 970,
+    height: 750,
+    webPreferences: {
+      nodeIntegration: true
+    },
+    autoHideMenuBar: true, // 隐藏菜单栏
+  })
+
+  win.loadURL(`http://${hostname}:${port}/`)
+})

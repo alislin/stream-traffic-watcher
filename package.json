@@ -2,11 +2,13 @@
   "name": "stream-traffic-watcher",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
     "run": "node app.js url.txt",
-    "server": "node server.js"
+    "server": "node server.js",
+    "start": "electron .",
+    "build": "electron-builder"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +18,9 @@
     "node-fetch": "^3.3.2",
     "not-the-systray": "^0.3.1",
     "ws": "^8.18.1"
+  },
+  "devDependencies": {
+    "electron": "^35.1.5",
+    "electron-builder": "^26.0.12"
   }
 }
