@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>流量监控</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: sans-serif; }
+        .container { width: 80%; margin: 0 auto; }
+        .data-item { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>流量监控</h1>
+        <div id="data-display">
+            <div class="data-item">总流量: <span id="monthly-limit"></span></div>
+            <div class="data-item">已使用: <span id="used"></span></div>
+            <div class="data-item">剩余流量: <span id="remaining"></span> (<span id="usage-percent"></span>%)</div>
+            <div class="data-item">剩余天数: <span id="remaining-days"></span></div>
+            <div class="data-item">今日已用: <span id="today-usage"></span></div>
+        </div>
+        <h2>每日使用量</h2>
+        <canvas id="daily-usage-chart"></canvas>
+    </div>
+
+    <script>
+        async function fetchData() {
+            const data = await Promise.all([
+                fetch('data.json').then(res => res.json()),
+                fetch('daily-data.json').then(res => res.json()) // Fetch recent daily data
+            ]);
+            return { currentData: data[0], recentDailyData: data[1] }; // Updated data structure
+        }
+
+        function formatBytes(bytes) {
+            const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+            let unitIndex = 0;
+            while (bytes >= 1024 && unitIndex < units.length - 1) {
+                bytes /= 1024;
+                unitIndex++;
+            }
+            return bytes.toFixed(2) + ' ' + units[unitIndex];
+        }
+
+        function displayData(data) {
+            const currentData = data.currentData;
+            const recentDailyData = data.recentDailyData; // Use recent daily data
+
+            const remainingDays = calculateRemainingDays(currentData.bw_reset_day_of_month);
+            const monthlyLimit = formatBytes(currentData.monthly_bw_limit_b);
+            const used = formatBytes(currentData.bw_counter_b);
+            const remaining = formatBytes(currentData.monthly_bw_limit_b - currentData.bw_counter_b);
+            const usagePercent = Math.round((currentData.bw_counter_b / currentData.monthly_bw_limit_b) * 100);
+            const todayUsage = recentDailyData[new Date().toISOString().split('T')[0]] ? formatBytes(recentDailyData[new Date().toISOString().split('T')[0]].daily_usage_b) : 'N/A';
+
+
+            document.getElementById('monthly-limit').textContent = monthlyLimit;
+            document.getElementById('used').textContent = used;
+            document.getElementById('remaining').textContent = remaining;
+            document.getElementById('usage-percent').textContent = usagePercent;
+            document.getElementById('remaining-days').textContent = remainingDays;
+            document.getElementById('today-usage').textContent = todayUsage;
+
+            renderChart(recentDailyData);
+        }
+
+        function calculateRemainingDays(resetDay) {
+            const today = new Date();
+            const currentDay = today.getDate();
+            let remainingDays = resetDay - currentDay;
+            if (remainingDays < 0) {
+                remainingDays += new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate() - currentDay + resetDay;
+            }
+            return remainingDays;
+        }
+
+
+        function renderChart(recentDailyData) {
+            const chartContainer = document.getElementById('daily-usage-chart');
+            chartContainer.innerHTML = ''; // Clear placeholder
+
+            const dates = Object.keys(recentDailyData).sort();
+            const usageData = dates.map(date => recentDailyData[date].daily_usage_b);
+            const labels = dates.map(date => date.split('-').slice(1).join('-')); // Format labels to MM-DD
+
+            new Chart(chartContainer, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '每日使用量',
+                        data: usageData,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value, index, ticks) {
+                                    return formatBytes(value);
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false // Hide legend
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += formatBytes(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const data = await fetchData();
+                displayData(data);
+            } catch (error) {
+                console.error('Error during data display:', error);
+            }
+        });
+
+        function displayData(data) {
+            try {
+                const currentData = data.currentData;
+                const recentDailyData = data.recentDailyData; // Use recent daily data
+
+                console.log('recentDailyData:', recentDailyData); // 打印 recentDailyData
+
+                const remainingDays = calculateRemainingDays(currentData.bw_reset_day_of_month);
+                const monthlyLimit = formatBytes(currentData.monthly_bw_limit_b);
+                const used = formatBytes(currentData.bw_counter_b);
+                const remaining = formatBytes(currentData.monthly_bw_limit_b - currentData.bw_counter_b);
+                const usagePercent = Math.round((currentData.bw_counter_b / currentData.monthly_bw_limit_b) * 100);
+                const todayUsage = recentDailyData[new Date().toISOString().split('T')[0]] ? formatBytes(recentDailyData[new Date().toISOString().split('T')[0]].daily_usage_b) : 'N/A';
+
+
+                document.getElementById('monthly-limit').textContent = monthlyLimit;
+                document.getElementById('used').textContent = used;
+                document.getElementById('remaining').textContent = remaining;
+                document.getElementById('usage-percent').textContent = usagePercent;
+                document.getElementById('remaining-days').textContent = remainingDays;
+                document.getElementById('today-usage').textContent = todayUsage;
+
+                renderChart(recentDailyData);
+            } catch (error) {
+                console.error('Error in displayData:', error);
+            }
+        }
+    </script>
+</body>
+</html>
