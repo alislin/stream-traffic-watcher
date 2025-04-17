@@ -63,12 +63,16 @@
             height: auto; /* 高度自适应 */
             max-height: 300px; /* 设置图表最大高度为 300px */
         }
+        .data-time{
+            color: #6e6e6e;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="data-time">数据更新时间: <span id="last-updated"></span></div>
-        <h1>流量监控</h1>
+        <h3>流量监控</h3>
         <div id="data-display">
             <div class="data-item">总流量: <span id="monthly-limit"></span></div>
             <div class="data-item">已使用: <span id="used"></span></div>
@@ -76,7 +80,7 @@
             <div class="data-item">剩余天数: <span id="remaining-days"></span></div>
             <div class="data-item">今日已用: <span id="today-usage"></span></div>
         </div>
-        <h2>每日使用量</h2>
+        <h3>每日使用量</h3>
         <canvas id="daily-usage-chart"></canvas>
     </div>
 
