@@ -2,15 +2,72 @@
 <html>
 <head>
     <title>流量监控</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: sans-serif; }
-        .container { width: 80%; margin: 0 auto; }
-        .data-item { margin-bottom: 10px; }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif; /* 更换字体为微软雅黑 */
+            background-color: #e0f7fa; /* 淡青色背景 */
+            color: #212121; /* 深灰色文字 */
+            margin: 0;
+            padding: 10px; /* 减少 body padding */
+            display: flex;
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
+            min-height: 100vh; /* 最小高度为视口高度 */
+        }
+        .container {
+            width: 90%; /* 容器宽度调整为90% */
+            max-width: 1600px; /* 最大宽度 */
+            margin: 10px; /* 减少 container margin */
+            background-color: #fff;
+            padding: 20px; /* 减少 container padding */
+            border-radius: 12px; /* 更大的圆角 */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* 更明显的阴影 */
+        }
+        h1, h2 {
+            color: #0277bd; /* 蓝色标题 */
+            text-align: center;
+            margin-bottom: 20px; /* 增加底部 margin */
+        }
+        h1 {
+            font-size: 2.5em; /* 更大的标题字体 */
+        }
+        h2 {
+            font-size: 1.8em; /* 更大的二级标题字体 */
+        }
+        #data-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 调整最小宽度 */
+            gap: 20px; /* 增加 gap */
+            margin-bottom: 30px; /* 增加底部 margin */
+        }
+        .data-item {
+            background-color: #fff; /* 数据项背景白色 */
+            border: 1px solid #b2ebf2; /* 边框颜色 */
+            padding: 20px; /* 增加 padding */
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s ease-in-out; /* 添加过渡效果 */
+        }
+        .data-item:hover {
+            transform: scale(1.05); /* 鼠标悬停放大效果 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 悬停时阴影效果 */
+        }
+        .data-item span {
+            font-weight: bold;
+            color: #0288d1; /* 强调颜色 */
+        }
+        #daily-usage-chart {
+            width: 100%; /* 图表宽度100% */
+            height: auto; /* 高度自适应 */
+            max-height: 300px; /* 设置图表最大高度为 300px */
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="data-time">数据更新时间: <span id="last-updated"></span></div>
         <h1>流量监控</h1>
         <div id="data-display">
             <div class="data-item">总流量: <span id="monthly-limit"></span></div>
@@ -25,11 +82,14 @@
 
     <script>
         async function fetchData() {
-            const data = await Promise.all([
-                fetch('data.json').then(res => res.json()),
-                fetch('daily-data.json').then(res => res.json()) // Fetch recent daily data
-            ]);
-            return { currentData: data[0], recentDailyData: data[1] }; // Updated data structure
+            const currentData = await fetch('data.json')
+                .then(res => res.json())
+                .catch(error => {
+                    console.error('Error fetching data.json:', error); // 添加错误处理
+                    return null; // 返回 null 表示数据获取失败
+                });
+            const dailyData = await fetch('daily-data.json').then(res => res.json()); // Fetch recent daily data
+            return { currentData: currentData, recentDailyData: dailyData };
         }
 
         function formatBytes(bytes) {
@@ -43,25 +103,39 @@
         }
 
         function displayData(data) {
-            const currentData = data.currentData;
-            const recentDailyData = data.recentDailyData; // Use recent daily data
+            try {
+                const currentData = data.currentData;
+                const recentDailyData = data.recentDailyData; // Use recent daily data
 
-            const remainingDays = calculateRemainingDays(currentData.bw_reset_day_of_month);
-            const monthlyLimit = formatBytes(currentData.monthly_bw_limit_b);
-            const used = formatBytes(currentData.bw_counter_b);
-            const remaining = formatBytes(currentData.monthly_bw_limit_b - currentData.bw_counter_b);
-            const usagePercent = Math.round((currentData.bw_counter_b / currentData.monthly_bw_limit_b) * 100);
-            const todayUsage = recentDailyData[new Date().toISOString().split('T')[0]] ? formatBytes(recentDailyData[new Date().toISOString().split('T')[0]].daily_usage_b) : 'N/A';
+                console.log('recentDailyData:', recentDailyData); // 打印 recentDailyData
+
+                if (!currentData) { // 检查 currentData 是否为 undefined
+                    console.error('currentData is undefined!'); // 打印错误日志
+                    return; // 提前返回，避免后续代码出错
+                }
+
+                console.log('currentData.last_updated:', currentData.last_updated); // 添加日志
+                document.getElementById('last-updated').textContent = currentData.last_updated;
+
+                const remainingDays = calculateRemainingDays(currentData.bw_reset_day_of_month);
+                const monthlyLimit = formatBytes(currentData.monthly_bw_limit_b);
+                const used = formatBytes(currentData.bw_counter_b);
+                const remaining = formatBytes(currentData.monthly_bw_limit_b - currentData.bw_counter_b);
+                const usagePercent = Math.round((currentData.bw_counter_b / currentData.monthly_bw_limit_b) * 100);
+                const todayUsage = recentDailyData[new Date().toISOString().split('T')[0]] ? formatBytes(recentDailyData[new Date().toISOString().split('T')[0]].daily_usage_b) : 'N/A';
 
 
-            document.getElementById('monthly-limit').textContent = monthlyLimit;
-            document.getElementById('used').textContent = used;
-            document.getElementById('remaining').textContent = remaining;
-            document.getElementById('usage-percent').textContent = usagePercent;
-            document.getElementById('remaining-days').textContent = remainingDays;
-            document.getElementById('today-usage').textContent = todayUsage;
+                document.getElementById('monthly-limit').textContent = monthlyLimit;
+                document.getElementById('used').textContent = used;
+                document.getElementById('remaining').textContent = remaining;
+                document.getElementById('usage-percent').textContent = usagePercent;
+                document.getElementById('remaining-days').textContent = remainingDays;
+                document.getElementById('today-usage').textContent = todayUsage;
 
-            renderChart(recentDailyData);
+                renderChart(recentDailyData);
+            } catch (error) {
+                console.error('Error in displayData:', error); // 确保在 catch 块中打印错误信息
+            }
         }
 
         function calculateRemainingDays(resetDay) {
@@ -137,33 +211,6 @@
             }
         });
 
-        function displayData(data) {
-            try {
-                const currentData = data.currentData;
-                const recentDailyData = data.recentDailyData; // Use recent daily data
-
-                console.log('recentDailyData:', recentDailyData); // 打印 recentDailyData
-
-                const remainingDays = calculateRemainingDays(currentData.bw_reset_day_of_month);
-                const monthlyLimit = formatBytes(currentData.monthly_bw_limit_b);
-                const used = formatBytes(currentData.bw_counter_b);
-                const remaining = formatBytes(currentData.monthly_bw_limit_b - currentData.bw_counter_b);
-                const usagePercent = Math.round((currentData.bw_counter_b / currentData.monthly_bw_limit_b) * 100);
-                const todayUsage = recentDailyData[new Date().toISOString().split('T')[0]] ? formatBytes(recentDailyData[new Date().toISOString().split('T')[0]].daily_usage_b) : 'N/A';
-
-
-                document.getElementById('monthly-limit').textContent = monthlyLimit;
-                document.getElementById('used').textContent = used;
-                document.getElementById('remaining').textContent = remaining;
-                document.getElementById('usage-percent').textContent = usagePercent;
-                document.getElementById('remaining-days').textContent = remainingDays;
-                document.getElementById('today-usage').textContent = todayUsage;
-
-                renderChart(recentDailyData);
-            } catch (error) {
-                console.error('Error in displayData:', error);
-            }
-        }
     </script>
 </body>
 </html>

@@ -62,6 +62,7 @@ async function fetchData() {
 
 function storeData(data) {
   try {
+    data.last_updated = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }); // 添加时间戳
     fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
   } catch (error) {
     console.error('Failed to store data:', error);
