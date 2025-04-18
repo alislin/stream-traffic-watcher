@@ -6,15 +6,18 @@
   "type": "module",
   "scripts": {
     "run": "node app.js url.txt",
-    "server": "node server.js"
+    "server": "node server.js",
+    "rollup": "rollup -c rollup.config.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
     "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2",
+    "rollup": "^4.40.0",
     "ws": "^8.18.1"
-  },
-  "devDependencies": {}
+  }
 }
