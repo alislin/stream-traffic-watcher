@@ -25,7 +25,8 @@ export default {
     }),
     copy({
       targets: [
-        { src: 'index.html', dest: 'dist' }
+        { src: 'index.html', dest: 'dist' },
+        { src: 'dist/*', dest: 'electron-app/app' }
       ]
     })
   ]

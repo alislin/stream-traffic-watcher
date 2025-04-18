@@ -1,5 +1,6 @@
-import { shell, app, BrowserWindow } from "electron";
+import { app, BrowserWindow } from "electron";
 import { spawn } from "child_process";
+import path from 'path';
 
 const hostname = "127.0.0.1";
 const port = 23110;
@@ -11,9 +12,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 // 在 Electron 应用准备就绪后打开外部链接
 app.whenReady().then(() => {
+  const serverPath = path.join(__dirname, "app", "server.cjs");
+  console.log("Starting server from:", serverPath);
   // 启动 server.js
-  const serverProcess = spawn("node", ["../server.js", "url.txt"], {
-    cwd: __dirname,
+  const serverProcess = spawn("node", [serverPath], {
+    // cwd: __dirname,
     stdio: "inherit",
     encoding: "utf-8",
   });
@@ -39,5 +42,14 @@ app.whenReady().then(() => {
     autoHideMenuBar: true, // 隐藏菜单栏
   });
 
-  win.loadURL(`http://${hostname}:${port}/`);
+  // win.loadURL(`http://${hostname}:${port}/`);
+  // 添加重试逻辑
+  const tryLoad = () => {
+    win.loadURL(`http://${hostname}:${port}/`).catch((err) => {
+      console.log("Retrying in 1 second...");
+      setTimeout(tryLoad, 1000);
+    });
+  };
+
+  tryLoad();
 });
