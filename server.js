@@ -12,10 +12,11 @@ const wsPort = port + 1; // WebSocket 端口
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const directoryToServe = __dirname; // 服务当前目录
+const appFile = process.env.NODE_ENV === 'production' ? 'app.cjs' : 'app.js';
 
 function runAppJS() {
   console.log("Running app.js at startup...");
-  const appProcess = spawn("node", ["app.js", "url.txt"], {
+  const appProcess = spawn("node", [appFile, "url.txt"], {
     cwd: directoryToServe,
     stdio: "inherit", // 将子进程的输出导入到当前进程
   });
@@ -105,7 +106,7 @@ function getContentType(filePath) {
 // 每 1 分钟执行一次 app.js (测试用)
 cron.schedule("*/30 * * * *", () => {
   console.log("Running app.js...");
-  const appProcess = spawn("node", ["app.js", "url.txt"], {
+  const appProcess = spawn("node", [appFile, "url.txt"], {
     cwd: directoryToServe,
     stdio: "inherit", // 将子进程的输出导入到当前进程
   });

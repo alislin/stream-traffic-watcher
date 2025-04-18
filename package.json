@@ -19,5 +19,8 @@
     "node-fetch": "^3.3.2",
     "rollup": "^4.40.0",
     "ws": "^8.18.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-replace": "^6.0.2"
   }
 }
