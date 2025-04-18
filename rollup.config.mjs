@@ -6,6 +6,7 @@ import copy from 'rollup-plugin-copy';
 export default {
   input: {
     server: 'server.js',
+    app: 'app.js',
   },
   output: {
     dir: 'dist',
