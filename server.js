@@ -20,32 +20,6 @@ function runAppJS() {
   console.log("Running flowCheck at startup...");
   flowCheck({ file: "url.txt", onFinish: () => broadcast("reload") });
   return;
-
-  const appProcess = spawn("node", [appFile, "url.txt"], {
-    cwd: directoryToServe,
-    stdio: "inherit", // 将子进程的输出导入到当前进程
-  });
-
-  appProcess.on("close", (code) => {
-    if (code !== 0) {
-      console.error(`flowCheck.js 执行失败，退出代码 ${code}`);
-    } else {
-      console.log("flowCheck.js 执行完成。");
-    }
-  });
-
-  appProcess.on("error", (err) => {
-    console.error("启动 flowCheck.js 失败:", err);
-  });
-
-  appProcess.on("close", (code) => {
-    if (code !== 0) {
-      console.error(`flowCheck.js 执行失败，退出代码 ${code}`);
-    } else {
-      console.log("flowCheck.js 执行完成，通知客户端刷新页面。");
-      broadcast("reload"); // 发送刷新消息
-    }
-  });
 }
 
 
@@ -111,24 +85,6 @@ function getContentType(filePath) {
 cron.schedule("*/1 * * * *", () => {
   runAppJS();
   return;
-  console.log("Running flowCheck.js...");
-  const appProcess = spawn("node", [appFile, "url.txt"], {
-    cwd: directoryToServe,
-    stdio: "inherit", // 将子进程的输出导入到当前进程
-  });
-
-  appProcess.on("close", (code) => {
-    if (code !== 0) {
-      console.error(`flowCheck.js 执行失败，退出代码 ${code}`);
-    } else {
-      console.log("flowCheck.js 执行完成，通知客户端刷新页面。");
-      broadcast("reload"); // 发送刷新消息
-    }
-  });
-
-  appProcess.on("error", (err) => {
-    console.error("启动 flowCheck.js 失败:", err);
-  });
 });
 
 runAppJS();
