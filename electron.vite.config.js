@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [
     electron({
       main: {
-        entry: 'server.js',
+        entry: 'electron-app/electron-starter.js',
       },
     }),
   ],
