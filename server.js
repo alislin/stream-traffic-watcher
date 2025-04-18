@@ -5,6 +5,7 @@ import { spawn } from "child_process";
 import cron from "node-cron";
 import { WebSocketServer } from "ws";
 import { fileURLToPath } from "url";
+import { flowCheck } from "./flowCheck.js";
 
 const hostname = "127.0.0.1";
 const port = 23110;
@@ -12,10 +13,14 @@ const wsPort = port + 1; // WebSocket 端口
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const directoryToServe = __dirname; // 服务当前目录
-const appFile = process.env.NODE_ENV === 'production' ? 'flowCheck.cjs' : 'flowCheck.js';
+const appFile =
+  process.env.NODE_ENV === "production" ? "flowCheck.cjs" : "flowCheck.js";
 
 function runAppJS() {
-  console.log("Running flowCheck.js at startup...");
+  console.log("Running flowCheck at startup...");
+  flowCheck({ file: "url.txt", onFinish: () => broadcast("reload") });
+  return;
+
   const appProcess = spawn("node", [appFile, "url.txt"], {
     cwd: directoryToServe,
     stdio: "inherit", // 将子进程的输出导入到当前进程
@@ -43,7 +48,6 @@ function runAppJS() {
   });
 }
 
-runAppJS();
 
 // 创建 WebSocket 服务器
 const wss = new WebSocketServer({ port: wsPort });
@@ -104,7 +108,9 @@ function getContentType(filePath) {
 }
 
 // 每 1 分钟执行一次 flowCheck.js (测试用)
-cron.schedule("*/30 * * * *", () => {
+cron.schedule("*/1 * * * *", () => {
+  runAppJS();
+  return;
   console.log("Running flowCheck.js...");
   const appProcess = spawn("node", [appFile, "url.txt"], {
     cwd: directoryToServe,
@@ -124,6 +130,8 @@ cron.schedule("*/30 * * * *", () => {
     console.error("启动 flowCheck.js 失败:", err);
   });
 });
+
+runAppJS();
 
 server.listen(port, hostname, () => {
   const serviceUrl = `http://${hostname}:${port}/`;
