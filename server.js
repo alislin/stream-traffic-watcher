@@ -113,7 +113,7 @@ export function flowServer(opt) {
   }
 
   // 每 1 分钟执行一次 flowCheck.js (测试用)
-  cron.schedule("*/1 * * * *", () => {
+  cron.schedule("*/30 * * * *", () => {
     runAppJS();
     return;
   });
