@@ -1,20 +1,19 @@
 import http from "http";
 import fs from "fs";
 import path from "path";
-import { spawn } from "child_process";
 import cron from "node-cron";
 import { WebSocketServer } from "ws";
 import { fileURLToPath } from "url";
 import { flowCheck } from "./flowCheck.js";
 
 const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
-const __dirname = path.resolve("./");
+const __dirname = path.dirname(__filename);
+const dataPath = path.resolve("./");
 
 export function flowServer(opt) {
   const hostname = "127.0.0.1";
   const port = opt?.port ?? 23110;
-  const wsPort = opt?.port ?? port + 1; // WebSocket 端口
+  const wsPort = +port + 1; // WebSocket 端口
   const directoryToServe = opt?.path ?? __dirname; // 服务当前目录
   const appFile =
     process.env.NODE_ENV === "production" ? "flowCheck.cjs" : "flowCheck.js";
@@ -47,9 +46,7 @@ export function flowServer(opt) {
 
     // 处理 /data 目录的请求
     if (req.url.startsWith("/data")) {
-      // 修改后的路径
-      // const dataFilePath = path.join(__dirname, "..", "..", "..", req.url);
-      const dataFilePath = path.join(__dirname, req.url);
+      const dataFilePath = path.join(dataPath, req.url);
       console.log("/data ----> ", dataFilePath);
 
       fs.readFile(dataFilePath, (err, content) => {
