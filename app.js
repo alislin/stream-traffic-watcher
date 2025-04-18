@@ -3,10 +3,16 @@ import fetch from 'node-fetch';
 import cron from 'node-cron';
 import fs from 'fs';
 
+// 检查 /data 目录是否存在，如果不存在则创建
+const dataDir = 'data';
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir);
+}
+
 let API_URL = 'https://flow.net/members/getbwcounter.php?id=998706&id=d7e932de-eb68-4c00-8e90-63b420e0824c'; // 默认值
-const DATA_FILE = 'data.json';
-const DAILY_DATA_FILE_PREFIX = 'daily-data-';
-const DAILY_DATA_FILE_RECENT = 'daily-data.json';
+const DATA_FILE = 'data/data.json';
+const DAILY_DATA_FILE_PREFIX = 'data/daily-data-';
+const DAILY_DATA_FILE_RECENT = 'data/daily-data.json';
 
 // 从命令行参数或文件中获取 API URL
 function getApiUrl() {

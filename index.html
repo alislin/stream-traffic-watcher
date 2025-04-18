@@ -86,13 +86,13 @@
 
     <script>
         async function fetchData() {
-            const currentData = await fetch('data.json')
+            const currentData = await fetch('data/data.json')
                 .then(res => res.json())
                 .catch(error => {
                     console.error('Error fetching data.json:', error); // 添加错误处理
                     return null; // 返回 null 表示数据获取失败
                 });
-            const dailyData = await fetch('daily-data.json').then(res => res.json()); // Fetch recent daily data
+            const dailyData = await fetch('data/daily-data.json').then(res => res.json()); // Fetch recent daily data
             return { currentData: currentData, recentDailyData: dailyData };
         }
 
