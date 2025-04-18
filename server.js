@@ -8,13 +8,14 @@ import { fileURLToPath } from "url";
 import { flowCheck } from "./flowCheck.js";
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __dirname = path.dirname(__filename);
+const __dirname = path.resolve("./");
 
 export function flowServer(opt) {
   const hostname = "127.0.0.1";
   const port = opt?.port ?? 23110;
   const wsPort = opt?.port ?? port + 1; // WebSocket 端口
-  const directoryToServe = __dirname; // 服务当前目录
+  const directoryToServe = opt?.path ?? __dirname; // 服务当前目录
   const appFile =
     process.env.NODE_ENV === "production" ? "flowCheck.cjs" : "flowCheck.js";
 
