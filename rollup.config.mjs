@@ -6,7 +6,7 @@ import copy from 'rollup-plugin-copy';
 export default {
   input: {
     server: 'server.js',
-    app: 'app.js'
+    app: 'flowCheck.js'
   },
   output: {
     dir: 'dist',

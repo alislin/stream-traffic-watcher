@@ -12,10 +12,10 @@ const wsPort = port + 1; // WebSocket 端口
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const directoryToServe = __dirname; // 服务当前目录
-const appFile = process.env.NODE_ENV === 'production' ? 'app.cjs' : 'app.js';
+const appFile = process.env.NODE_ENV === 'production' ? 'flowCheck.cjs' : 'flowCheck.js';
 
 function runAppJS() {
-  console.log("Running app.js at startup...");
+  console.log("Running flowCheck.js at startup...");
   const appProcess = spawn("node", [appFile, "url.txt"], {
     cwd: directoryToServe,
     stdio: "inherit", // 将子进程的输出导入到当前进程
@@ -23,21 +23,21 @@ function runAppJS() {
 
   appProcess.on("close", (code) => {
     if (code !== 0) {
-      console.error(`app.js 执行失败，退出代码 ${code}`);
+      console.error(`flowCheck.js 执行失败，退出代码 ${code}`);
     } else {
-      console.log("app.js 执行完成。");
+      console.log("flowCheck.js 执行完成。");
     }
   });
 
   appProcess.on("error", (err) => {
-    console.error("启动 app.js 失败:", err);
+    console.error("启动 flowCheck.js 失败:", err);
   });
 
   appProcess.on("close", (code) => {
     if (code !== 0) {
-      console.error(`app.js 执行失败，退出代码 ${code}`);
+      console.error(`flowCheck.js 执行失败，退出代码 ${code}`);
     } else {
-      console.log("app.js 执行完成，通知客户端刷新页面。");
+      console.log("flowCheck.js 执行完成，通知客户端刷新页面。");
       broadcast("reload"); // 发送刷新消息
     }
   });
@@ -103,9 +103,9 @@ function getContentType(filePath) {
   }
 }
 
-// 每 1 分钟执行一次 app.js (测试用)
+// 每 1 分钟执行一次 flowCheck.js (测试用)
 cron.schedule("*/30 * * * *", () => {
-  console.log("Running app.js...");
+  console.log("Running flowCheck.js...");
   const appProcess = spawn("node", [appFile, "url.txt"], {
     cwd: directoryToServe,
     stdio: "inherit", // 将子进程的输出导入到当前进程
@@ -113,15 +113,15 @@ cron.schedule("*/30 * * * *", () => {
 
   appProcess.on("close", (code) => {
     if (code !== 0) {
-      console.error(`app.js 执行失败，退出代码 ${code}`);
+      console.error(`flowCheck.js 执行失败，退出代码 ${code}`);
     } else {
-      console.log("app.js 执行完成，通知客户端刷新页面。");
+      console.log("flowCheck.js 执行完成，通知客户端刷新页面。");
       broadcast("reload"); // 发送刷新消息
     }
   });
 
   appProcess.on("error", (err) => {
-    console.error("启动 app.js 失败:", err);
+    console.error("启动 flowCheck.js 失败:", err);
   });
 });
 
