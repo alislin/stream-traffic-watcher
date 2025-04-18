@@ -43,36 +43,66 @@ export function flowServer(opt) {
       directoryToServe,
       req.url === "/" ? "index.html" : req.url
     );
-    fs.readFile(filePath, (err, content) => {
-      if (err) {
-        if (err.code === "ENOENT") {
-          // 文件未找到
-          res.writeHead(404);
-          res.end("404 Not Found");
+
+    // 处理 /data 目录的请求
+    if (req.url.startsWith("/data")) {
+      // 修改后的路径
+      // const dataFilePath = path.join(__dirname, "..", "..", "..", req.url);
+      const dataFilePath = path.join(__dirname, req.url);
+      console.log("/data ----> ", dataFilePath);
+
+      fs.readFile(dataFilePath, (err, content) => {
+        if (err) {
+          if (err.code === "ENOENT") {
+            // 文件未找到
+            res.writeHead(404);
+            res.end("404 Not Found");
+          } else {
+            // 服务器错误
+            res.writeHead(500);
+            res.end("500 Internal Server Error: " + err.code);
+          }
         } else {
-          // 服务器错误
-          res.writeHead(500);
-          res.end("500 Internal Server Error: " + err.code);
+          // 成功读取文件
+          const contentType = getContentType(dataFilePath);
+          res.writeHead(200, { "Content-Type": contentType });
+          res.end(content);
         }
-      } else {
-        // 成功读取文件
-        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-        res.end(content);
-      }
-    });
+      });
+    } else {
+      console.log("file ----> ", filePath);
+      fs.readFile(filePath, (err, content) => {
+        if (err) {
+          if (err.code === "ENOENT") {
+            // 文件未找到
+            res.writeHead(404);
+            res.end("404 Not Found");
+          } else {
+            // 服务器错误
+            res.writeHead(500);
+            res.end("500 Internal Server Error: " + err.code);
+          }
+        } else {
+          // 成功读取文件
+          const contentType = getContentType(filePath);
+          res.writeHead(200, { "Content-Type": contentType });
+          res.end(content);
+        }
+      });
+    }
   });
 
   function getContentType(filePath) {
     let extname = path.extname(filePath);
     switch (extname) {
       case ".html":
-        return "text/html";
+        return "text/html; charset=utf-8";
       case ".js":
-        return "text/javascript";
+        return "text/javascript; charset=utf-8";
       case ".css":
-        return "text/css";
+        return "text/css; charset=utf-8";
       case ".json":
-        return "application/json";
+        return "application/json; charset=utf-8";
       case ".png":
         return "image/png";
       case ".jpg":
