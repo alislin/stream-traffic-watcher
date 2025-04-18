@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "run": "node flowCheck.js url.txt",
-    "server": "node server.js",
+    "server": "node app.js",
     "rollup": "rollup -c rollup.config.mjs"
   },
   "keywords": [],
