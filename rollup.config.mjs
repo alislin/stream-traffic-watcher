@@ -23,6 +23,14 @@ export default {
         'process.env.NODE_ENV': JSON.stringify('production')
       }
     }),
+    {
+      name: 'clean-dist',
+      buildStart: async () => {
+        const fs = await import('fs-extra');
+        fs.default.removeSync('dist');
+        console.log('Cleaned /dist directory');
+      }
+    },
     copy({
       targets: [
         { src: 'index.html', dest: 'dist' }
@@ -32,6 +40,7 @@ export default {
       name: 'copy-after-build',
       writeBundle: async () => {
         const fs = await import('fs-extra');
+        fs.default.removeSync('electron-app/app');
         fs.default.ensureDirSync('electron-app/app');
         fs.default.copySync('dist', 'electron-app/app', { overwrite: true });
         console.log('Copied /dist to /electron-app/app');
