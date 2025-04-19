@@ -5,7 +5,7 @@
   "main": "electron-starter.js",
   "type": "module",
   "scripts": {
-    "run": "node flowCheck.js url.txt",
+    "run": "node flowCheckApp.js url.txt",
     "server": "node app.js",
     "rollup": "rollup -c rollup.config.mjs"
   },

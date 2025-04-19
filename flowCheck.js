@@ -4,7 +4,7 @@ import cron from "node-cron";
 import fs from "fs";
 
 export function flowCheck(url_opt) {
-  const { onStart, onFinish } = url_opt;
+  const { onStart, onFinish } = url_opt ?? {};
   // 检查 /data 目录是否存在，如果不存在则创建
   const dataDir = "data";
   if (!fs.existsSync(dataDir)) {
@@ -59,12 +59,17 @@ export function flowCheck(url_opt) {
     try {
       const response = await fetch(API_URL);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const message = `网络请求失败，状态码: ${response.status}`;
+        console.error(message);
+        // 给出更友好的提示
+        console.log("请检查网络连接或确认API URL是否正确。");
+        throw new Error(message);
       }
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error("Failed to fetch data:", error);
+      console.error("Failed to fetch data:", error.message);
+      console.log("请检查网络连接或确认API URL是否正确。");
       return null;
     }
   }
@@ -167,8 +172,8 @@ export function flowCheck(url_opt) {
     }
     const todayUsage = recentDailyData[new Date().toISOString().split("T")[0]]
       ? formatBytes(
-          recentDailyData[new Date().toISOString().split("T")[0]].daily_usage_b
-        )
+        recentDailyData[new Date().toISOString().split("T")[0]].daily_usage_b
+      )
       : "N/A";
 
     console.log("-------------------- 流量监控 --------------------");

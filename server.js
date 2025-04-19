@@ -15,8 +15,6 @@ export function flowServer(opt) {
   const port = opt?.port ?? 23110;
   const wsPort = +port + 1; // WebSocket 端口
   const directoryToServe = opt?.path ?? __dirname; // 服务当前目录
-  const appFile =
-    process.env.NODE_ENV === "production" ? "flowCheck.cjs" : "flowCheck.js";
 
   function runAppJS() {
     console.log("Running flowCheck at startup...");
