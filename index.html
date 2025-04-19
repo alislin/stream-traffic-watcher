@@ -284,17 +284,32 @@
         const wsPort = window.location.port ? parseInt(window.location.port) + 1 : 23111;
         let ws;
         let reconnectTimeoutId;
+        let reconnectCount = 0;
 
         function connectWebSocket() {
             if (reconnectTimeoutId) {
                 clearTimeout(reconnectTimeoutId);
             }
 
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                return; // 如果已连接，不再重试
+            }
+
+
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+
             ws = new WebSocket(`ws://localhost:${wsPort}`);
+            reconnectCount++;
 
             ws.onopen = () => {
                 console.log('WebSocket connected');
                 document.getElementById('websocket-icon').className = 'fas fa-circle websocket-connected';
+                if (reconnectCount > 1) {
+                    window.location.reload();
+                }
                 loadData();
             };
 
@@ -307,14 +322,12 @@
             };
 
             ws.onclose = () => {
-                ws.close();
                 console.log('WebSocket disconnected');
                 document.getElementById('websocket-icon').className = 'fas fa-times-circle websocket-disconnected';
                 reconnectTimeoutId = setTimeout(connectWebSocket, 10000); // Reconnect after 10 seconds
             };
 
             ws.onerror = (error) => {
-                ws.close();
                 console.error('WebSocket error:', error);
                 document.getElementById('websocket-icon').className = 'fas fa-times-circle websocket-disconnected';
                 reconnectTimeoutId = setTimeout(connectWebSocket, 10000); // Reconnect after 10 seconds
