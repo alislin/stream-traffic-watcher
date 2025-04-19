@@ -1,78 +1,134 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>流量监控</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
-            font-family: 'Microsoft YaHei', sans-serif; /* 更换字体为微软雅黑 */
-            background-color: #e0f7fa; /* 淡青色背景 */
-            color: #212121; /* 深灰色文字 */
+            font-family: 'Microsoft YaHei', sans-serif;
+            /* 更换字体为微软雅黑 */
+            background-color: #e0f7fa;
+            /* 淡青色背景 */
+            color: #212121;
+            /* 深灰色文字 */
             margin: 0;
-            padding: 10px; /* 减少 body padding */
+            padding: 10px;
+            /* 减少 body padding */
             display: flex;
-            justify-content: center; /* 水平居中 */
-            align-items: center; /* 垂直居中 */
+            justify-content: center;
+            /* 水平居中 */
+            align-items: center;
+            /* 垂直居中 */
             /* overflow: hidden; 隐藏超出内容 */
         }
+
         .container {
-            width: 90%; /* 容器宽度调整为90% */
-            max-width: 1600px; /* 最大宽度 */
-            margin: 10px; /* 减少 container margin */
+            width: 90%;
+            /* 容器宽度调整为90% */
+            max-width: 1600px;
+            /* 最大宽度 */
+            margin: 10px;
+            /* 减少 container margin */
             background-color: #fff;
-            padding: 20px; /* 减少 container padding */
-            border-radius: 12px; /* 更大的圆角 */
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* 更明显的阴影 */
+            padding: 20px;
+            /* 减少 container padding */
+            border-radius: 12px;
+            /* 更大的圆角 */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            /* 更明显的阴影 */
         }
-        h1, h2 {
-            color: #0277bd; /* 蓝色标题 */
-            text-align: center;
-            margin-bottom: 20px; /* 增加底部 margin */
-        }
-        h1 {
-            font-size: 2.5em; /* 更大的标题字体 */
-        }
+
+        h1,
         h2 {
-            font-size: 1.8em; /* 更大的二级标题字体 */
+            color: #0277bd;
+            /* 蓝色标题 */
+            text-align: center;
+            margin-bottom: 20px;
+            /* 增加底部 margin */
         }
+
+        h1 {
+            font-size: 2.5em;
+            /* 更大的标题字体 */
+        }
+
+        h2 {
+            font-size: 1.8em;
+            /* 更大的二级标题字体 */
+        }
+
         #data-display {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 调整最小宽度 */
-            gap: 20px; /* 增加 gap */
-            margin-bottom: 30px; /* 增加底部 margin */
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            /* 调整最小宽度 */
+            gap: 20px;
+            /* 增加 gap */
+            margin-bottom: 30px;
+            /* 增加底部 margin */
         }
+
         .data-item {
-            background-color: #fff; /* 数据项背景白色 */
-            border: 1px solid #b2ebf2; /* 边框颜色 */
-            padding: 20px; /* 增加 padding */
+            background-color: #fff;
+            /* 数据项背景白色 */
+            border: 1px solid #b2ebf2;
+            /* 边框颜色 */
+            padding: 20px;
+            /* 增加 padding */
             border-radius: 8px;
             text-align: center;
-            transition: transform 0.3s ease-in-out; /* 添加过渡效果 */
+            transition: transform 0.3s ease-in-out;
+            /* 添加过渡效果 */
         }
+
         .data-item:hover {
-            transform: scale(1.05); /* 鼠标悬停放大效果 */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 悬停时阴影效果 */
+            transform: scale(1.05);
+            /* 鼠标悬停放大效果 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            /* 悬停时阴影效果 */
         }
+
         .data-item span {
             font-weight: bold;
-            color: #0288d1; /* 强调颜色 */
+            color: #0288d1;
+            /* 强调颜色 */
         }
+
         #daily-usage-chart {
-            width: 100%; /* 图表宽度100% */
-            height: auto; /* 高度自适应 */
-            max-height: 300px; /* 设置图表最大高度为 300px */
+            width: 100%;
+            /* 图表宽度100% */
+            height: auto;
+            /* 高度自适应 */
+            max-height: 300px;
+            /* 设置图表最大高度为 300px */
         }
-        .data-time{
+
+        .data-time {
             color: #6e6e6e;
             font-size: 0.9rem;
         }
+
+        .websocket-connected {
+            color: green;
+        }
+
+        .websocket-disconnected {
+            color: red;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <div class="data-time">数据更新时间: <span id="last-updated"></span></div>
-        <h3>流量监控</h3>
+        <div class="data-time">
+            <span id="websocket-status"><i class="fas fa-circle websocket-connected" id="websocket-icon"></i></span>
+            数据更新时间: <span id="last-updated"></span>
+        </div>
+        <h3>流量统计</h3>
         <div id="data-display">
             <div class="data-item">总流量: <span id="monthly-limit"></span></div>
             <div class="data-item">已使用: <span id="used"></span></div>
@@ -153,15 +209,21 @@
         }
 
 
+        let myChart; // Declare myChart outside the function scope
+
         function renderChart(recentDailyData) {
             const chartContainer = document.getElementById('daily-usage-chart');
-            chartContainer.innerHTML = ''; // Clear placeholder
+            // chartContainer.innerHTML = ''; // Clear placeholder - No need to clear innerHTML
 
             const dates = Object.keys(recentDailyData).sort();
             const usageData = dates.map(date => recentDailyData[date].daily_usage_b);
             const labels = dates.map(date => date.split('-').slice(1).join('-')); // Format labels to MM-DD
 
-            new Chart(chartContainer, {
+            if (myChart) {
+                myChart.destroy();
+            }
+
+            myChart = new Chart(chartContainer, {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -188,7 +250,7 @@
                         },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     let label = context.dataset.label || '';
                                     if (label) {
                                         label += ': ';
@@ -205,35 +267,62 @@
             });
         }
 
-
         document.addEventListener('DOMContentLoaded', async () => {
+            await loadData();
+        });
+
+        async function loadData() {
             try {
                 const data = await fetchData();
                 displayData(data);
             } catch (error) {
                 console.error('Error during data display:', error);
             }
-        });
+        }
 
         // WebSocket 客户端
         const wsPort = window.location.port ? parseInt(window.location.port) + 1 : 23111;
-        const ws = new WebSocket(`ws://localhost:${wsPort}`);
+        let ws;
+        let reconnectTimeoutId;
 
-        ws.onopen = () => {
-            console.log('WebSocket connected');
-        };
-
-        ws.onmessage = (event) => {
-            if (event.data === 'reload') {
-                console.log('收到刷新消息，正在刷新页面...');
-                window.location.reload();
+        function connectWebSocket() {
+            if (reconnectTimeoutId) {
+                clearTimeout(reconnectTimeoutId);
             }
-        };
 
-        ws.onclose = () => {
-            console.log('WebSocket disconnected');
-        };
+            ws = new WebSocket(`ws://localhost:${wsPort}`);
 
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+                document.getElementById('websocket-icon').className = 'fas fa-circle websocket-connected';
+                loadData();
+            };
+
+            ws.onmessage = (event) => {
+                if (event.data === 'reload') {
+                    console.log('收到刷新消息，正在刷新页面...');
+                    // window.location.reload();
+                    loadData();
+                }
+            };
+
+            ws.onclose = () => {
+                ws.close();
+                console.log('WebSocket disconnected');
+                document.getElementById('websocket-icon').className = 'fas fa-times-circle websocket-disconnected';
+                reconnectTimeoutId = setTimeout(connectWebSocket, 10000); // Reconnect after 10 seconds
+            };
+
+            ws.onerror = (error) => {
+                ws.close();
+                console.error('WebSocket error:', error);
+                document.getElementById('websocket-icon').className = 'fas fa-times-circle websocket-disconnected';
+                reconnectTimeoutId = setTimeout(connectWebSocket, 10000); // Reconnect after 10 seconds
+            };
+        }
+
+        connectWebSocket();
     </script>
 </body>
+
 </html>
