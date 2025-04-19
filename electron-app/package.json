@@ -1,16 +1,16 @@
 {
     "name": "stream-traffic-watcher",
     "version": "1.0.0",
-    "description": "Electron application",
+    "description": "stream traffic watcher",
     "main": "electron-starter.js",
     "type": "module",
     "scripts": {
         "start": "electron .",
-        "build": "electron-builder",
+        "build": "electron-builder --win --x64",
         "build-icons": "electron-icon-builder --input=./assets/stream-traffic_512.png --output=./assets --flatten"
     },
     "build2": {
-        "directories": {
+        "directories2": {
             "buildResources": "assets"
         },
         "win": {
@@ -27,7 +27,7 @@
         }
     },
     "keywords": [],
-    "author": "",
+    "author": "ZC Studio",
     "license": "ISC",
     "devDependencies": {
         "electron": "^35.1.5",
