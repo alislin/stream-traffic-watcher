@@ -8,13 +8,47 @@
     "extensions": [],
     "binaryVersion": "6.0.0"
   },
-  "window": {
-    "width": 970,
-    "height": 750,
-    "minWidth": 400,
-    "minHeight": 200,
-    "title": "Stream Traffic Watcher",
-    "icon": "./assets/stream-traffic.png"
+  "modes": {
+    "window": {
+      "title": "Neutralinojs app",
+      "width": 970,
+      "height": 750,
+      "minWidth": 400,
+      "minHeight": 200,
+      "center": true,
+      "fullScreen": false,
+      "alwaysOnTop": false,
+      "icon": "./assets/icons/512x512.png",
+      "enableInspector": true,
+      "borderless": false,
+      "maximize": false,
+      "hidden": false,
+      "resizable": true,
+      "exitProcessOnClose": false
+    },
+    "browser": {
+      "globalVariables": {
+        "TEST": "Test value browser"
+      },
+      "nativeBlockList": [
+        "filesystem.*"
+      ]
+    },
+    "cloud": {
+      "url": "/resources/#cloud",
+      "nativeAllowList": [
+        "app.*"
+      ]
+    },
+    "chrome": {
+      "width": 800,
+      "height": 500,
+      "args": "--user-agent=\"Neutralinojs chrome mode\"",
+      "nativeBlockList": [
+        "filesystem.*",
+        "os.*"
+      ]
+    }
   },
   "filesystem": {
     "rules": [
