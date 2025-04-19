@@ -131,7 +131,7 @@ app.on('before-quit', () => {
 
 function getFlowData() {
   return new Promise((resolve, reject) => {
-    http.get(`http://${hostname}:${port}/data/data.json`, (res) => { // 替换为您的 flowServer 地址
+    http.get(`http://${hostname}:${port}/data/data.json`, (res) => {
       let data = '';
       res.on('data', (chunk) => {
         data += chunk;
@@ -139,7 +139,27 @@ function getFlowData() {
       res.on('end', () => {
         try {
           const flowData = JSON.parse(data);
-          resolve(flowData);
+
+          // 读取 daily-data.json 文件
+          http.get(`http://${hostname}:${port}/data/daily-data.json`, (dailyRes) => {
+            let dailyData = '';
+            dailyRes.on('data', (chunk) => {
+              dailyData += chunk;
+            });
+            dailyRes.on('end', () => {
+              try {
+                const dailyDataJson = JSON.parse(dailyData);
+                // 将 dailyDataJson 合并到 flowData 中
+                Object.assign(flowData, dailyDataJson);
+              } catch (e) {
+                console.error('Error parsing daily-data.json:', e);
+              }
+              resolve(flowData);
+            });
+          }).on('error', (err) => {
+            console.error('Error reading daily-data.json:', err);
+            resolve(flowData); // 即使读取失败，也resolve主流程
+          });
         } catch (e) {
           reject(e);
         }
@@ -159,8 +179,14 @@ async function updateTrayData() {
       const remaining = formatBytes(flowData.monthly_bw_limit_b - flowData.bw_counter_b);
       const remainingDays = calculateRemainingDays(flowData.bw_reset_day_of_month);
 
-      // 获取今日已用和最后更新时间
-      const todayUsageBytes = flowData.daily_usage_b || 0;
+      // 获取今日已用
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+      const todayData = flowData[todayStr];
+      let todayUsageBytes = 0;
+      if (todayData) {
+        todayUsageBytes = todayData.daily_usage_b || 0;
+      }
       const todayUsage = formatBytes(todayUsageBytes);
       const lastUpdated = flowData.last_updated || 'N/A';
 
