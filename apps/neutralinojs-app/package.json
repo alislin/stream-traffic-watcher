@@ -1,0 +1,26 @@
+{
+  "name": "stream-traffic-watcher-neutralinojs",
+  "version": "1.0.0",
+  "description": "Stream Traffic Watcher with Neutralinojs",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "neu run",
+    "build": "neu build",
+    "update": "neu update"
+  },
+  "keywords": [
+    "neutralinojs"
+  ],
+  "author": "Alis",
+  "license": "MIT",
+  "dependencies": {
+    "@neutralinojs/lib": "^4.0.0",
+    "@neutralinojs/neu": "^4.0.0",
+    "http": "0.0.1-security",
+    "path": "^0.12.7",
+    "url": "^0.11.3"
+  },
+  "devDependencies": {
+    "@neutralinojs/neutralino": "^4.10.0"
+  }
+}

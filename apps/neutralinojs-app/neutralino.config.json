@@ -1,0 +1,39 @@
+{
+  "applicationId": "org.neutralino.streamtrafficwatcher",
+  "version": "1.0.0",
+  "defaultPlatform": "window",
+  "cli": {
+    "binaryName": "stream-traffic-watcher",
+    "resources": "./assets/**/*",
+    "extensions": [],
+    "binaryVersion": "6.0.0"
+  },
+  "window": {
+    "width": 970,
+    "height": 750,
+    "minWidth": 400,
+    "minHeight": 200,
+    "title": "Stream Traffic Watcher",
+    "icon": "./assets/stream-traffic.png"
+  },
+  "filesystem": {
+    "rules": [
+      {
+        "pattern": "assets/*",
+        "allow": "*"
+      }
+    ]
+  },
+  "updater": {
+    "versionFile": "",
+    "url": ""
+  },
+  "plugins": [],
+  "nativeBlockList": [
+    "filesystem.writeFile"
+  ],
+  "debug": {
+    "port": 23110
+  },
+  "main": "src/main.js"
+}
