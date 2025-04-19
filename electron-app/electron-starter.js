@@ -158,7 +158,13 @@ async function updateTrayData() {
       const used = formatBytes(flowData.bw_counter_b);
       const remaining = formatBytes(flowData.monthly_bw_limit_b - flowData.bw_counter_b);
       const remainingDays = calculateRemainingDays(flowData.bw_reset_day_of_month);
-      const tooltip = `总流量: ${monthlyLimit}\n已使用: ${used}\n剩余流量: ${remaining}\n剩余天数: ${remainingDays}`;
+
+      // 获取今日已用和最后更新时间
+      const todayUsageBytes = flowData.daily_usage_b || 0;
+      const todayUsage = formatBytes(todayUsageBytes);
+      const lastUpdated = flowData.last_updated || 'N/A';
+
+      const tooltip = `总流量: ${monthlyLimit}\n已使用: ${used}\n剩余流量: ${remaining}\n剩余天数: ${remainingDays}\n----------------------\n今日已用: ${todayUsage}\n更新时间: ${lastUpdated}`;
       tray.setToolTip(tooltip);
     } else {
       tray.setToolTip('无法获取流量数据');
