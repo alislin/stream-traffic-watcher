@@ -5,9 +5,10 @@
     "main": "electron-starter.js",
     "type": "module",
     "scripts": {
-        "start": "electron .",
-        "build": "electron-builder --win --x64",
-        "build-icons": "electron-icon-builder --input=./assets/stream-traffic_512.png --output=./assets --flatten"
+        "start": "npm run copy-assets && electron .",
+        "build": "npm run copy-assets && electron-builder --win --x64",
+        "build-icons": "electron-icon-builder --input=./assets/stream-traffic_512.png --output=./assets --flatten",
+        "copy-assets": "node ../init-assets.js ./"
     },
     "build2": {
         "directories2": {

@@ -40,9 +40,9 @@ export default {
       name: 'copy-after-build',
       writeBundle: async () => {
         const fs = await import('fs-extra');
-        fs.default.removeSync('electron-app/app');
-        fs.default.ensureDirSync('electron-app/app');
-        fs.default.copySync('dist', 'electron-app/app', { overwrite: true });
+        fs.default.removeSync('apps/electron-app/app');
+        fs.default.ensureDirSync('apps/electron-app/app');
+        fs.default.copySync('dist', 'apps/electron-app/app', { overwrite: true });
         console.log('Copied /dist to /electron-app/app');
       }
     }
