@@ -1,0 +1,17 @@
+{
+  "name": "neu-app",
+  "version": "1.0.0",
+  "description": "The default template for a Neutralinojs app. It's possible to use your favorite frontend framework by using [these steps](https://neutralino.js.org/docs/getting-started/using-frontend-libraries).",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "neu run",
+    "build": "neu build",
+    "copy-assets": "node ../init-assets.js ./"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@neutralinojs/neu": "^11.4.0"
+  }
+}

@@ -1,14 +1,21 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
 
+const hostname = "127.0.0.1";
+const port = 23110;
+
 let tray = null;
 let mainWindow;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+console.log("start neu app");
+Neutralino.debug.log("Neutralino 初始化完成");
+
+
 function createWindow() {
-  Neutralino.window.create('index.html', { // 假设入口 HTML 文件是 index.html
+  Neutralino.window.create(`http://${hostname}:${port}/`, { // 假设入口 HTML 文件是 index.html
     width: 970,
     height: 750,
     minWidth: 400,
