@@ -112,7 +112,10 @@ export function flowCheck(url_opt) {
       yesterdayLastCounter = monthlyData[yesterdayStr].last_bw_counter_b || 0;
     }
     const currentCounter = currentData.bw_counter_b;
-    const dailyUsage = currentCounter - yesterdayLastCounter;
+    let dailyUsage = currentCounter - yesterdayLastCounter;
+    if (dailyUsage < 0) {
+      dailyUsage = currentCounter;
+    }
 
     monthlyData[today] = {
       bw_counter_b: currentCounter,
@@ -172,8 +175,8 @@ export function flowCheck(url_opt) {
     }
     const todayUsage = recentDailyData[new Date().toISOString().split("T")[0]]
       ? formatBytes(
-        recentDailyData[new Date().toISOString().split("T")[0]].daily_usage_b
-      )
+          recentDailyData[new Date().toISOString().split("T")[0]].daily_usage_b
+        )
       : "N/A";
 
     console.log("-------------------- 流量监控 --------------------");
