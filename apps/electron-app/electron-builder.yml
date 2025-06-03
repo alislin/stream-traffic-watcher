@@ -12,7 +12,8 @@ files:
 
 # Windows 配置
 win:
-  target: ["nsis", "portable"]
+  # target: ["nsis", "portable"]
+  target: ["portable"]
   icon: assets/icons/icon.ico
   legalTrademarks: ZC-Studio
 

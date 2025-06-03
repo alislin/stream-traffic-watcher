@@ -44,6 +44,11 @@ export default {
         fs.default.ensureDirSync('apps/electron-app/app');
         fs.default.copySync('dist', 'apps/electron-app/app', { overwrite: true });
         console.log('Copied /dist to /electron-app/app');
+
+        fs.default.removeSync('apps/neu-app/app');
+        fs.default.ensureDirSync('apps/neu-app/app');
+        fs.default.copySync('dist', 'apps/neu-app/app', { overwrite: true });
+        console.log('Copied /dist to /neu-app/app');
       }
     }
   ]

@@ -15,10 +15,14 @@ export function flowServer(opt) {
   const port = opt?.port ?? 23110;
   const wsPort = +port + 1; // WebSocket 端口
   const directoryToServe = opt?.path ?? __dirname; // 服务当前目录
+  const logger = opt?.logger ?? console;
 
   function runAppJS() {
-    console.log("Running flowCheck at startup...");
-    flowCheck({ file: "url.txt", onFinish: () => broadcast("reload") });
+    logger.log("Running flowCheck at startup...");
+    flowCheck({
+      file: path.join(directoryToServe, "url.txt"),
+      onFinish: () => broadcast("reload"),
+    });
     return;
   }
 
@@ -26,8 +30,8 @@ export function flowServer(opt) {
   const wss = new WebSocketServer({ port: wsPort });
 
   wss.on("connection", (ws) => {
-    console.log("Client connected");
-    ws.on("close", () => console.log("Client disconnected"));
+    logger.log("Client connected");
+    ws.on("close", () => logger.log("Client disconnected"));
   });
 
   function broadcast(message) {
@@ -38,15 +42,18 @@ export function flowServer(opt) {
 
   const server = http.createServer((req, res) => {
     let filePath = path.join(
-      directoryToServe,
+      __dirname,
       req.url === "/" ? "index.html" : req.url
     );
 
     // 处理 /data 目录的请求
     if (req.url.startsWith("/data")) {
-      const dataFilePath = path.join(dataPath, req.url);
-      console.log("/data ----> ", dataFilePath);
+      const dataFilePath = path.join(directoryToServe ?? dataPath, req.url);
+      logger.log("/data ----> ", dataFilePath);
 
+      // res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+      // res.end(`req: ${req.url} \npath: ${dataFilePath}`);
+      // return;
       fs.readFile(dataFilePath, (err, content) => {
         if (err) {
           if (err.code === "ENOENT") {
@@ -66,7 +73,7 @@ export function flowServer(opt) {
         }
       });
     } else {
-      console.log("file ----> ", filePath);
+      logger.log("file ----> ", filePath);
       fs.readFile(filePath, (err, content) => {
         if (err) {
           if (err.code === "ENOENT") {
@@ -118,7 +125,7 @@ export function flowServer(opt) {
 
   server.listen(port, hostname, () => {
     const serviceUrl = `http://${hostname}:${port}/`;
-    console.log(`HTTP Server running at ${serviceUrl}`);
-    console.log(`WebSocket Server running at ws://${hostname}:${wsPort}`);
+    logger.log(`HTTP Server running at ${serviceUrl}`);
+    logger.log(`WebSocket Server running at ws://${hostname}:${wsPort}`);
   });
 }
