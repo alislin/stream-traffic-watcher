@@ -6,7 +6,8 @@
   "scripts": {
     "start": "neu run",
     "build": "neu build",
-    "copy-assets": "node ../init-assets.js ./"
+    "copy-assets": "node ../init-assets.js ./",
+    "update": "npx neu update"
   },
   "keywords": [],
   "author": "",
