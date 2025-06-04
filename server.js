@@ -76,7 +76,7 @@ export function flowServer(opt) {
     } else if (req.url === "/info") {
       const dataFilePath = path.join(directoryToServe ?? dataPath, req.url);
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-      res.end(`data path: ${dataFilePath}`);
+      res.end(`req: ${req.url} \npath: ${dataFilePath}`);
     } else {
       logger.log("file ----> ", filePath);
       fs.readFile(filePath, (err, content) => {
