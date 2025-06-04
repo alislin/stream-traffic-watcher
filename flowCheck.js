@@ -2,9 +2,10 @@
 import fetch from "node-fetch";
 import cron from "node-cron";
 import fs from "fs";
+import path from "path";
 
 export function flowCheck(url_opt) {
-  const { onStart, onFinish } = url_opt ?? {};
+  const { urlFile, dataPath, onStart, onFinish } = url_opt ?? {};
   // 检查 /data 目录是否存在，如果不存在则创建
   const dataDir = "data";
   if (!fs.existsSync(dataDir)) {
@@ -13,9 +14,12 @@ export function flowCheck(url_opt) {
 
   let API_URL =
     "https://flow.net/members/getbwcounter.php?id=998706&id=d7e932de-eb68-4c00-8e90-63b420e0824c"; // 默认值
-  const DATA_FILE = "data/data.json";
-  const DAILY_DATA_FILE_PREFIX = "data/daily-data-";
-  const DAILY_DATA_FILE_RECENT = "data/daily-data.json";
+  const DATA_FILE =
+    path.join(dataPath, "data", "data.json") ?? "data/data.json";
+  const DAILY_DATA_FILE_PREFIX =
+    path.join(dataPath, "data", "daily-data-") ?? "data/daily-data-";
+  const DAILY_DATA_FILE_RECENT =
+    path.join(dataPath, "data", "daily-data.json") ?? "data/daily-data.json";
 
   // 从命令行参数或文件中获取 API URL
   function getApiUrl(opt) {
@@ -31,8 +35,8 @@ export function flowCheck(url_opt) {
       } else {
         console.error("Error: -url 参数后缺少 URL 值");
       }
-    } else if (opt?.file || args.length > 0) {
-      const filename = opt?.file ?? args[0];
+    } else if (urlFile || args.length > 0) {
+      const filename = urlFile ?? args[0];
       try {
         const fileContent = fs.readFileSync(filename, "utf-8");
         apiUrl = fileContent.trim(); // 读取文件内容作为 API URL

@@ -20,7 +20,8 @@ export function flowServer(opt) {
   function runAppJS() {
     logger.log("Running flowCheck at startup...");
     flowCheck({
-      file: path.join(directoryToServe, "url.txt"),
+      urlFile: path.join(directoryToServe, "url.txt"),
+      dataPath: directoryToServe,
       onFinish: () => broadcast("reload"),
     });
     return;
@@ -72,6 +73,10 @@ export function flowServer(opt) {
           res.end(content);
         }
       });
+    } else if (req.url === "/info") {
+      const dataFilePath = path.join(directoryToServe ?? dataPath, req.url);
+      res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+      res.end(`data path: ${dataFilePath}`);
     } else {
       logger.log("file ----> ", filePath);
       fs.readFile(filePath, (err, content) => {
