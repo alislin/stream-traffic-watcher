@@ -5,18 +5,30 @@
   "defaultMode": "window",
   "port": 0,
   "documentRoot": "/resources/",
+  "url1": "http://127.0.0.1:23110/",
   "url": "/",
   "enableServer": true,
   "enableNativeAPI": true,
+  "enableExtensions": true,
   "tokenSecurity": "one-time",
   "logging": {
     "enabled": true,
-    "writeToLogFile": true
+    "writeToLogFile": true,
+    "extensionLogging": "verbose"
   },
   "nativeAllowList": [
     "app.*",
     "os.*",
-    "debug.log"
+    "debug.log",
+    "extensions.*",
+    "window.*",
+    "filesystem.*"
+  ],
+  "extensions": [
+    {
+      "id": "backend",
+      "entry": "/extensions/backend/"
+    }
   ],
   "globalVariables": {
     "TEST1": "Hello",
@@ -40,14 +52,13 @@
       "center": true,
       "fullScreen": false,
       "alwaysOnTop": false,
-      "icon1": "/resources/icons/appIcon.png",
       "icon": "/assets/icons/512x512.png",
       "enableInspector": true,
       "borderless": false,
       "maximize": false,
       "hidden": false,
       "resizable": true,
-      "exitProcessOnClose": false
+      "exitProcessOnClose": true
     },
     "browser": {
       "globalVariables": {
@@ -75,11 +86,11 @@
   },
   "cli": {
     "binaryName": "stream-traffic-watcher",
-    "resourcesPath": "/app/",
+    "resourcesPath": "/resources/",
     "extensionsPath": "/extensions/",
     "clientLibrary": "/resources/js/neutralino.js",
     "binaryVersion": "6.0.0",
     "clientVersion": "6.0.0",
-    "main": "/src/app-starter.js"
+    "main": "/js/main.js"
   }
 }

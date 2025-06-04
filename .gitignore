@@ -27,3 +27,4 @@ dist-ssr
 daily*
 data.json
 url.txt
+apps/neu-app/resources/js/neutralino.d.ts

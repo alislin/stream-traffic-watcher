@@ -1,3 +1,13 @@
+## 环境准备
+
+```bash
+npm i
+npx neu update
+```
+
+复制 `node_modules/@neutralinojs/lib/dist/neutralino.js` 到 `resources/js/neutralino.js`
+
+
 # neutralinojs-minimal
 
 The default template for a Neutralinojs app. It's possible to use your favorite frontend framework by using [these steps](https://neutralino.js.org/docs/getting-started/using-frontend-libraries).
